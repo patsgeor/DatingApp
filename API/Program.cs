@@ -10,11 +10,15 @@ builder.Services.AddDbContext<AppDbcontext>(options =>
 {
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+builder.Services.AddCors();//για να επιτρεψει αιτησεις απο angular
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-app.UseAuthorization();
+app.UseCors(policy => policy.AllowAnyHeader()
+                            .AllowAnyMethod()
+                            .WithOrigins("http://localhost:4200",
+                                        "https://localhost:4200"));//angular
 
 app.MapControllers();
 
