@@ -2,7 +2,7 @@ using System;
 
 namespace API.DTOs;
 
-public class loginDto
+public class LoginDto
 {
     public string Email { get; set; }   = "";
     public string Password { get; set; } = "";

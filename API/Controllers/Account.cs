@@ -41,7 +41,7 @@ public class Account(AppDbcontext context, ITokenService tokenService) :BaseApiC
     }//register
 
     [HttpPost("login")]//api/account/login
-    public async Task<ActionResult<UserDto>> Login(loginDto loginDto)
+    public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
     {
         var user = await context.Users
             .SingleOrDefaultAsync(x => x.Email == loginDto.Email.ToLower());

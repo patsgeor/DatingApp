@@ -15,6 +15,5 @@ public static class AppUserExtensions
             DisplayName = user.DisplayName,
             Token = tokenService.CreateToken(user)
         };
-
     }
 }
