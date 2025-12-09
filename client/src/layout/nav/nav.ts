@@ -23,14 +23,14 @@ export class Nav {
       next: res => {
         console.log(res); 
         this.toast.success('Logged in successfully');
-        this.router.navigateByUrl('/members');
-        this.creds={};
+        this.router.navigateByUrl('/members');// Μετά το login, πλοηγείται στη σελίδα μελών
+        this.creds={};// Καθαρίζει τα credentials μετά το login
       },
       error: err => {
         console.log(err);
         this.toast.error(err.error);
       },
-      complete: () => console.log('Completed')
+      complete: () => console.log('Completed login request')
     });
   }
 

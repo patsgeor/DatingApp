@@ -14,9 +14,7 @@ export const authGuard: CanActivateFn = () => {
     return true;
   } else {
     //  Ο χρήστης ΔΕΝ είναι logged-in
-    // Εμφάνιση μηνύματος σφάλματος μέσω toast
     toast.error('You shall not pass!');
-
     // Απορρίπτουμε την πλοήγηση
     return false;
   }
