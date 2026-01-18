@@ -7,6 +7,7 @@ import { InitService } from '../core/services/init-service';
 import { last, lastValueFrom } from 'rxjs';
 import { errorInterceptor } from '../core/interceptors/error-interceptor';
 import { jwtInterceptor } from '../core/interceptors/jwt-interceptor';
+import { loadingInterceptor } from '../core/interceptors/loading-interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -18,7 +19,7 @@ export const appConfig: ApplicationConfig = {
     
     //Παρέχει το HttpClient service του Angular, για να μπορείς να κάνεις HTTP requests (GET, POST, κλπ).
     //επιπλέον, προσθέτει τον errorInterceptor (σαν Middleware) για να χειρίζεται τα σφάλματα των HTTP αιτημάτων.
-    provideHttpClient(withInterceptors([errorInterceptor,jwtInterceptor])), 
+    provideHttpClient(withInterceptors([errorInterceptor,jwtInterceptor, loadingInterceptor])), 
 
     // Παρέχει την υπηρεσία αρχικοποίησης της εφαρμογής πριν από την εκκίνηση.
     provideAppInitializer( () => {
