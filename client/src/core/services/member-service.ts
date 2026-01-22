@@ -33,4 +33,18 @@ updateMember(member : EditableMember) {
   return this.http.put(this.baseUrl+'members',member);
 }
 
+uploadPhoto(file : File){
+  const formData=new FormData()
+  formData.append("file",file);// το όνομα "file" πρεπει να ταιριαζει με αυτο που περιμενει ο server στο PhotoController
+  return this.http.post<Photo>(this.baseUrl+'members/add-photo',formData);// δεν στελουμε memberId γιατι το παιρνουμε απο το token, δεν στελουμε το file με json αλλα με formData.
+}
+
+setMainImage(photo:Photo){
+  return this.http.put(this.baseUrl +'members/set-main-photo/'+photo.id,{});
+}
+
+deletePhoto(photoId:number){
+  return this.http.delete(this.baseUrl +'members/delete-photo/'+photoId);
+}
+
 }

@@ -7,6 +7,7 @@ using Humanizer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using API.Middleware;
+using API.Helpers;
 
 
 
@@ -24,6 +25,7 @@ builder.Services.AddCors();//για να επιτρεψει αιτησεις α�
 
 builder.Services.AddScoped<ITokenService, TokenService>();//dependency injection για το token service
 builder.Services.AddScoped<IMemberRepository, MemberRepository>();//dependency injection για το member repository
+builder.Services.AddScoped<IPhotoService, PhotoService>();//dependency injection για το photo service
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -39,6 +41,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
 
 
 var app = builder.Build();
