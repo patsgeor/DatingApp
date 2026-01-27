@@ -38,6 +38,9 @@ export class MemberPhotos implements OnInit {
       next: (photo) => {
         this.memberService.editMode.set(false);
         this.photos.set([...this.photos(), photo]);
+        if(!this.memberService.member()?.imageUrl){
+          this.setMainLocalPhoto(photo);
+        }
       },
       error: (error) => { console.log(error); },
       complete: () => this.loading.set(false)
@@ -47,19 +50,28 @@ export class MemberPhotos implements OnInit {
   setMainPhoto(photo: Photo) {
     this.memberService.setMainImage(photo).subscribe({
       next: () => {
-        const currentUser = this.accountService.currentUser();
-        if (currentUser) currentUser.imageUrl = photo.url;
-        this.accountService.currentUser.set(currentUser as User);
-        console.log(this.accountService.currentUser());
-
-        this.memberService.member.update(member => ({ ...member, imageUrl: photo.url }) as Member);
+         this.setMainLocalPhoto(photo);
+        
       }
     });
+  }
+
+  setMainLocalPhoto(photo: Photo) {
+    //αντιγράφω το currentUser
+        const currentUser = this.accountService.currentUser();
+        //ελενχω αν υπάρχει ο currentUser και αν ναι αλλάζω την imageUrl
+        if (currentUser) currentUser.imageUrl = photo.url;
+        //ενημερώνω τον currentUser και το localStorage
+        this.accountService.setCurrentUser(currentUser as User);
+
+        //ενημερώνω το memberService.member signal κρατοντας τα υπόλοιπα πεδία ίδια και αλλάζοντας μόνο την imageUrl
+          this.memberService.member.update(member => ({ ...member, imageUrl: photo.url }) as Member);
   }
 
   deletePhoto(photoId: number) {
     this.memberService.deletePhoto(photoId).subscribe({
       next: () => {
+        //Ενημερώνω το photos signal αφαιρώντας την διαγραμμένη φωτογραφία
         this.photos.update(photos=> photos.filter(p => p.id!==photoId))
       },
       error(err) {

@@ -17,10 +17,11 @@
         <div class="flex w-full gap-3">
             <button class="btn flex-1" (click)="onCancel()">Cancel</button>
             <button class="btn btn-primary flex-1" 
-            (click)="onUploadFile()" [disabled]="loading()"> @if(loading()){
-            <span class="loading loading-spinner"></span>
-        }Upload image
-    </button>
+                    (click)="onUploadFile()" [disabled]="loading()"> 
+                    @if(loading()){
+                        <span class="loading loading-spinner"></span>
+                    }Upload image
+            </button>
         </div>
        
     </div>

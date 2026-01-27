@@ -14,7 +14,7 @@ export class AgePipe implements PipeTransform {
     const birthDate = new Date(value);
     // αρχικός υπολογισμός ηλικίας
     let age = today.getFullYear() - birthDate.getFullYear();
-    // έλεγχος αν έχει περάσει η μέρα γενεθλίων φέτος
+    // έλεγχος αν έχει περάσει ο μηνασ γενεθλίων φέτος
     const monthDifference = today.getMonth() - birthDate.getMonth();
     
     // αν δεν έχει περάσει η ημερομηνια γενεθλίων για φετος, μειώνουμε την ηλικία κατά 1

@@ -34,9 +34,9 @@ updateMember(member : EditableMember) {
 }
 
 uploadPhoto(file : File){
-  const formData=new FormData()
+  const formData=new FormData()//Τα αρχεία δεν στέλνονται ως JSON Το API περιμένει: multipart/form-data, key με όνομα file
   formData.append("file",file);// το όνομα "file" πρεπει να ταιριαζει με αυτο που περιμενει ο server στο PhotoController
-  return this.http.post<Photo>(this.baseUrl+'members/add-photo',formData);// δεν στελουμε memberId γιατι το παιρνουμε απο το token, δεν στελουμε το file με json αλλα με formData.
+  return this.http.post<Photo>(this.baseUrl+'members/add-photo',formData);// δεν στελουμε memberId γιατι το παιρνουμε απο το token
 }
 
 setMainImage(photo:Photo){
