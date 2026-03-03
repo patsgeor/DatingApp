@@ -10,10 +10,28 @@ public class AppDbcontext(DbContextOptions options) : DbContext(options)
     public DbSet<AppUser> Users { get; set; }
     public DbSet<Member>  Members { get; set; }
     public DbSet<Photo> Photos { get; set; }
+    public DbSet<MemberLike> MemberLikes {get; set;}
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);// ειναι για να μην χαθούν οι ρυθμίσεις που έχουμε κάνει στο IdentityDbContext
+
+        modelBuilder.Entity<MemberLike>()
+            .HasKey(ml => new {ml.SourceMemberId,ml.TargetMemberId});
+
+        modelBuilder.Entity<MemberLike>()
+            .HasOne(X => X.SourceMember)
+            .WithMany(X => X.LikedMembers)
+            .HasForeignKey(x => x.SourceMemberId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        modelBuilder.Entity<MemberLike>()
+            .HasOne(X => X.TargetMember)
+            .WithMany(X => X.LikedByMembers)
+            .HasForeignKey(x => x.TargetMemberId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+
 
         // Δημιουργούμε έναν ValueConverter για να μετατρέπουμε τα DateTime σε UTC όταν αποθηκεύονται στη βάση 
         // και να τα ορίζουμε ως UTC όταν ανακτώνται από τη βάση

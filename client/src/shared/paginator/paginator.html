@@ -1,7 +1,7 @@
 <div class="flex items-center w-full gap-3 py-3">
     <div>
-        <span>Items per page:</span>
-        <select class="select w-24" (change)="onPageChange(undefined,$event.target)">
+        <span>Items per page: </span>
+        <select class="select w-20" (change)="onPageChange(undefined,$event.target)">
             @for (item of selectPage; track $index) {
             <option [value]="item" [selected]="item===pageSize()">{{item}}</option>
             }

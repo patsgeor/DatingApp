@@ -27,6 +27,7 @@ builder.Services.AddScoped<ITokenService, TokenService>();//dependency injection
 builder.Services.AddScoped<IMemberRepository, MemberRepository>();//dependency injection για το member repository
 builder.Services.AddScoped<LogUserActivity>();//dependency injection για το log user activity action filter
 builder.Services.AddScoped<IPhotoService, PhotoService>();//dependency injection για το photo service
+builder.Services.AddScoped<ILikesRepository, LikeRepository>();//dependency injection για το photo service
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

@@ -19,8 +19,15 @@ public class Member
     //navigation property
     [JsonIgnore]
     public List<Photo> Photos { get; set; } = [];
+    
+    [JsonIgnore]
+    public List<MemberLike> LikedMembers { get; set; } = []; // ειναι τα μέλη που εγώ έχω κάνει like (δηλαδή εγώ είμαι το SourceMember)
+
+    [JsonIgnore]
+    public List<MemberLike> LikedByMembers { get; set; } = []; // ειναι τα μέλη που έχουν κάνει like σε εμένα (δηλαδή εγώ είμαι το TargetMember)
 
     [ForeignKey(nameof(Id))]
     [JsonIgnore]
     public AppUser User { get; set; } = null!;
+
 }

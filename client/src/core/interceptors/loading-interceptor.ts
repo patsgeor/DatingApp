@@ -15,11 +15,24 @@ export const loadingInterceptor: HttpInterceptorFn = (req, next) => {
     return paramString ? `${url}?${paramString}` : `${url}`;
   }
 
-  const casheKey = generateCacheKey(req.url,req.params);
+  const cacheKey = generateCacheKey(req.url,req.params);
+
+  const invalidateCache=(urlPattern : string)=>{
+    for( const key of cache.keys()){
+      if(key.includes(urlPattern)){
+        cache.delete(key);
+        console.log( `Cache invalidated for: ${key}`)
+      }
+    }
+  }
+
+  if(req.method==='POST' && req.url.includes(`/likes`)){
+    invalidateCache('/likes')
+  }
 
   // αν υπαρχει η απαντηση στο cash, την επιστρεφουμε αμεσως χωρις να κανουμε το request
   if(req.method==='GET'){
-    const cashResponse=cache.get(casheKey);
+    const cashResponse=cache.get(cacheKey);
     if(cashResponse){
        return of( cashResponse);// επιστρεφουμε την αποθηκευμενη απαντηση ως observable, για να ταιριαζει με τον τυπο επιστροφης
     }
@@ -33,11 +46,7 @@ export const loadingInterceptor: HttpInterceptorFn = (req, next) => {
 
     // αποθηκευουμε την απαντηση στο cash για μελλοντικη χρηση
     tap(response => {
-      cache.set(casheKey,response);
-      // αν η αιτηση δεν ειναι GET, διαγραφουμε την αποθηκευμενη απαντηση απο το cache γιατι κατι αλλαξε
-      if(req.method!=='GET'){
-        cache.clear();
-        }
+      cache.set(cacheKey,response);
     }),
 
     // οταν ολοκληρωνεται το request, μειωνουμε τον μετρητη των busy requests
