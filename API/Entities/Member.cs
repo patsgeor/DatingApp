@@ -26,6 +26,12 @@ public class Member
     [JsonIgnore]
     public List<MemberLike> LikedByMembers { get; set; } = []; // ειναι τα μέλη που έχουν κάνει like σε εμένα (δηλαδή εγώ είμαι το TargetMember)
 
+    [JsonIgnore]
+    public List<Message> MessagesSent { get; set; } = []; 
+
+    [JsonIgnore]
+    public List<Message> MessagesReceived{ get; set; } = []; 
+
     [ForeignKey(nameof(Id))]
     [JsonIgnore]
     public AppUser User { get; set; } = null!;

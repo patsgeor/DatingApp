@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using API.Middleware;
 using API.Helpers;
+using API.Entities;
 
 
 
@@ -27,7 +28,8 @@ builder.Services.AddScoped<ITokenService, TokenService>();//dependency injection
 builder.Services.AddScoped<IMemberRepository, MemberRepository>();//dependency injection για το member repository
 builder.Services.AddScoped<LogUserActivity>();//dependency injection για το log user activity action filter
 builder.Services.AddScoped<IPhotoService, PhotoService>();//dependency injection για το photo service
-builder.Services.AddScoped<ILikesRepository, LikeRepository>();//dependency injection για το photo service
+builder.Services.AddScoped<ILikesRepository, LikeRepository>();//dependency injection για το LikeRepository
+builder.Services.AddScoped<IMessageRepository, MessageRepository>();//dependency injection για το MessageRepository
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -36,10 +38,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ?? throw new Exception("TokenKey not found in configuration - program.cs");
        options.TokenValidationParameters = new TokenValidationParameters
        {
-           ValidateIssuerSigningKey = true,
-           IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenKey)),
-           ValidateIssuer = false,
-           ValidateAudience = false
+           ValidateIssuerSigningKey = true, // ελέγχει αν το token έχει υπογραφεί με το σωστό κλειδί
+           IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenKey)), // το κλειδί που χρησιμοποιείται για την υπογραφή του token
+           ValidateIssuer = false, // δεν ελέγχει τον εκδότη του token (π.χ. το domain που το δημιούργησε)
+           ValidateAudience = false // δεν ελέγχει το κοινό του token (π.χ. ποιος είναι ο αποδέκτης του token)
         };
     });
 
