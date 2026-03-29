@@ -30,7 +30,7 @@ export const appConfig: ApplicationConfig = {
         setTimeout(async () => {
           try {
             console.log('App Initializer: Εκτέλεση InitService...');
-            return await lastValueFrom(initService.init()); // Περιμένει να ολοκληρωθεί η αρχικοποίηση       
+            await  lastValueFrom(initService.init()); // Περιμένει να ολοκληρωθεί η αρχικοποίηση       
           } finally {
             console.log('App Initializer: Αρχικοποίηση ολοκληρώθηκε.');
             // Αφαιρεί το αρχικό splash screen μετά την ολοκλήρωση της αρχικοποίησης

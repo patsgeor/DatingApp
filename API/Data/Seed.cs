@@ -2,6 +2,8 @@ using System.Security.Cryptography;
 using System.Text.Json;
 using API.DTOs;
 using API.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Data;
@@ -9,9 +11,9 @@ namespace API.Data;
 public class Seed
 {
 
-    public static async Task SeedUsers(AppDbcontext context)
+    public static async Task SeedUsers(UserManager<AppUser> userManager)
     {
-        if (await context.Users.AnyAsync()) return;
+        if (await userManager.Users.AnyAsync()) return;
 
         var memberData = await File.ReadAllTextAsync("Data/UserSeedData.json");
         var listUsers = JsonSerializer.Deserialize<List<SeedUserDto>>(memberData);
@@ -24,16 +26,13 @@ public class Seed
 
         foreach (var user in listUsers)
         {
-        using var hmac = new HMACSHA512();
-
             var newUser = new AppUser
             {
                 Id = user.Id,
-                Email = user.Email,
+                Email = user.Email.ToLower(),
                 DisplayName = user.DisplayName,
+                UserName = user.Email.ToLower(),
                 ImageUrl = user.ImageUrl,
-                PasswordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes("Pa$$w0rd")),
-                PasswordSalt = hmac.Key,
                 Member = new Member
                 {
                     Id = user.Id,
@@ -54,10 +53,23 @@ public class Seed
                 Url = user.ImageUrl!,
                 MemberId = user.Id
             });
-            context.Users.Add(newUser);
+            var result= await userManager.CreateAsync(newUser,"Pa$$w0rd");
+            if(!result.Succeeded) Console.WriteLine(result.Errors.First().Description);
+            
+            result = await userManager.AddToRoleAsync(newUser,"Member");
+            if(!result.Succeeded) Console.WriteLine(result.Errors.First().Description);
 
         }
-        await context.SaveChangesAsync();
+        
+        //δημιουργία και ενος Admin
+        var admin=new AppUser{
+            Id="Admin-id",
+            DisplayName="Admin",
+            Email="admin@test.com",
+            UserName="admin@test.com",
+        };
+        await userManager.CreateAsync(admin,"Pa$$w0rd");
+        await userManager.AddToRolesAsync(admin,["Admin","Moderator"]);
 
     }
 }

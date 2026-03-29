@@ -1,13 +1,14 @@
 using System;
 using API.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace API.Data;
 
-public class AppDbcontext(DbContextOptions options) : DbContext(options)
+public class AppDbcontext(DbContextOptions options) : IdentityDbContext<AppUser>(options)
 {
-    public DbSet<AppUser> Users { get; set; }
     public DbSet<Member>  Members { get; set; }
     public DbSet<Photo> Photos { get; set; }
     public DbSet<MemberLike> MemberLikes {get; set;}
@@ -16,6 +17,14 @@ public class AppDbcontext(DbContextOptions options) : DbContext(options)
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);// ειναι για να μην χαθούν οι ρυθμίσεις που έχουμε κάνει στο IdentityDbContext
+
+        modelBuilder.Entity<IdentityRole>().HasData(// για να προσθέσουμε κάποιους ρόλους στη βάση δεδομένων κατά την δημιουργία της
+            new IdentityRole {Id="member-id", Name = "Member", NormalizedName = "MEMBER" },
+            new IdentityRole {Id="admin-id",Name = "Admin", NormalizedName = "ADMIN" },
+            new IdentityRole {Id="moderator-id", Name = "Moderator", NormalizedName = "MODERATOR" }
+        );
+
+
         //MemberLike
         modelBuilder.Entity<MemberLike>()
             .HasKey(ml => new {ml.SourceMemberId,ml.TargetMemberId});

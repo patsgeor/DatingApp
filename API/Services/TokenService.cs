@@ -1,15 +1,18 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 using API.Entities;
 using API.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 
 namespace API.Services;
 
-public class TokenService( IConfiguration config) : ITokenService
+public class TokenService( IConfiguration config,UserManager<AppUser> userManager) : ITokenService
 {
-    public string CreateToken(AppUser user)
+    public async Task<string> CreateToken(AppUser user)
     {
         // Ανάκτηση του TokenKey από το configuration
         var tokenKey = config["TokenKey"] ?? throw new Exception("Cannot find TokenKey in configuration.");
@@ -23,13 +26,17 @@ public class TokenService( IConfiguration config) : ITokenService
         // Create symmetric security key
         var _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenKey));
 
+        var roles = await userManager.GetRolesAsync(user);
+
         // δημιουργία claims για το χρήστη 
         var claims = new List<Claim>
         {
-            new Claim (ClaimTypes.Email, user.Email),
+            new Claim (ClaimTypes.Email, user.Email!),
             new Claim (ClaimTypes.NameIdentifier, user.Id),
             new Claim("custom-claim", "custom-value")
         };
+
+        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
         // δημιουργία των credentials χρησιμοποιώντας το κλειδί και τον αλγόριθμο HMAC SHA512
         var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
@@ -39,7 +46,7 @@ public class TokenService( IConfiguration config) : ITokenService
         {
             Subject = new ClaimsIdentity(claims),
             NotBefore = DateTime.UtcNow,
-            Expires = DateTime.Now.AddDays(7),// DateTime.UtcNow.AddMinutes(7),// ορισμός λήξης του token για παραγωγικό περιβάλλον
+            Expires = DateTime.Now.AddMinutes(7),// ορισμός λήξης του token για παραγωγικό περιβάλλον
             SigningCredentials = creds
         };
 
@@ -47,5 +54,11 @@ public class TokenService( IConfiguration config) : ITokenService
         var tokenHandler = new JwtSecurityTokenHandler();
         var token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
+    }
+
+    public string GenerateRefreshToken()
+    {
+        var randomBytes = RandomNumberGenerator.GetBytes(64);
+        return Convert.ToBase64String(randomBytes);
     }
 }

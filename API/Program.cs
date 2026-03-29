@@ -9,6 +9,7 @@ using System.Text;
 using API.Middleware;
 using API.Helpers;
 using API.Entities;
+using Microsoft.AspNetCore.Identity;
 
 
 
@@ -31,6 +32,20 @@ builder.Services.AddScoped<IPhotoService, PhotoService>();//dependency injection
 builder.Services.AddScoped<ILikesRepository, LikeRepository>();//dependency injection για το LikeRepository
 builder.Services.AddScoped<IMessageRepository, MessageRepository>();//dependency injection για το MessageRepository
 
+// ------------------------------------------------------------------------------
+//  Identity configuration
+builder.Services.AddIdentityCore<AppUser>(options =>
+{
+    options.Password.RequireNonAlphanumeric = false;// για να μην απαιτείται ειδικός χαρακτήρας στο password
+    options.User.RequireUniqueEmail = true;// για να απαιτείται μοναδικό email
+})
+.AddRoles<IdentityRole>() // για να προσθέσουμε υποστήριξη για ρόλους (π.χ. admin, moderator, κτλ)
+.AddEntityFrameworkStores<AppDbcontext>();// για να χρησιμοποιήσουμε το AppDbcontext για να αποθηκεύσουμε τα δεδομένα του Identity (users, roles, κτλ)
+// ------------------------------------------------------------------------------
+
+
+// ------------------------------------------------------------------------------
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -44,6 +59,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
            ValidateAudience = false // δεν ελέγχει το κοινό του token (π.χ. ποιος είναι ο αποδέκτης του token)
         };
     });
+// ------------------------------------------------------------------------------
+
+builder.Services.AddAuthorizationBuilder()
+.AddPolicy("RequireAdminRole", p => p.RequireRole("Admin"))
+.AddPolicy("ModeratePhotoRole", p => p.RequireRole("Admin","Moderator"));
+
 
 builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
 
@@ -54,8 +75,9 @@ var app = builder.Build();
 app.UseMiddleware<ExceptionMiddleware>();
 
 // Configure the HTTP request pipeline.
-app.UseCors(policy => policy.AllowAnyHeader()
-                            .AllowAnyMethod()
+app.UseCors(policy => policy.AllowAnyHeader()  // για να επιτρέψει όλα τα headers που στέλνει το angular (π.χ. Authorization header με το jwt token)
+                            .AllowAnyMethod() // για να επιτρέψει όλα τα headers και όλες τις μεθόδους (GET, POST, κτλ) από το angular
+                            .AllowCredentials() // για να επιτρέψει την αποστολή cookies από το angular
                             .WithOrigins("http://localhost:4200",
                                         "https://localhost:4200"));//angular
 
@@ -78,13 +100,14 @@ try
     // Ζητάμε από το DI container να μας δώσει ένα AppDbcontext.
     // Επειδή ο DbContext είναι Scoped, πρέπει να βρίσκεται μέσα σε scope.
     var context = service.GetRequiredService<AppDbcontext>();
+    var userManager = service.GetRequiredService<UserManager<AppUser>>();
 
     // Εφαρμόζει ΟΛΕΣ τις migration που υπάρχουν
     // και δημιουργεί τη βάση αν δεν υπάρχει.
     await context.Database.MigrateAsync();
     
     // Τρέχει τη δική σου μέθοδο για seed των Users στο database.
-    await Seed.SeedUsers(context);
+    await Seed.SeedUsers(userManager);
 }
 catch (Exception ex)
 {

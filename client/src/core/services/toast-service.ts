@@ -16,7 +16,7 @@ export class ToastService {
     if (!document.getElementById('toast-container')) {
       const toast = document.createElement('div');
       toast.id = 'toast-container';
-      toast.className = 'toast toast-bottom toast-end';
+      toast.className = 'toast toast-bottom toast-end z-50';
       document.body.append(toast);
     }
   }
