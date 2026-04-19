@@ -14,4 +14,12 @@ public interface IMessageRepository
     Task<IReadOnlyList<MessageDto>> GetMessageThread(string currentMemberId, string RecipientId);
     Task<bool>SaveAllChange();
 
+    // για το group SignalIr
+    void AddGroup(Group group);
+    Task RemoveConnection(string connectionId);
+    Task<Connection?> GetConnection(string connectionId);
+    Task<Group?> GetMessageGroup(string groupName);
+    Task<Group?> GetGroupForConnection(string connectionId);
+
+
 }

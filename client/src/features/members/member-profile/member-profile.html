@@ -40,7 +40,7 @@
                     <button [disabled]="!editForm.dirty" class="btn btn-success self-end">submit</button>
                 </form>
         }@else{
-        <div>{{member.description}}</div>
+        <div>{{member.description || 'no description yet'}}</div>
         }
     </div>
 }

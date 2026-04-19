@@ -13,6 +13,8 @@ public class AppDbcontext(DbContextOptions options) : IdentityDbContext<AppUser>
     public DbSet<Photo> Photos { get; set; }
     public DbSet<MemberLike> MemberLikes {get; set;}
     public DbSet<Message> Messages {get; set;}
+    public DbSet<Connection> Connections { get; set; }
+    public DbSet<Group> Groups  {get; set;}
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

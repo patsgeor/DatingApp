@@ -3,6 +3,7 @@ import { Member } from '../../../types/member';
 import { RouterLink } from "@angular/router";
 import { AgePipe } from "../../../core/pipes/age-pipe";
 import { LikesService } from '../../../core/services/likes-service';
+import { PresenceService } from '../../../core/services/presence-service';
 
 @Component({
   selector: 'app-member-card',
@@ -12,8 +13,10 @@ import { LikesService } from '../../../core/services/likes-service';
 })
 export class MemberCard {
   likeServise=inject(LikesService);
+  presenceService =inject(PresenceService);
   member = input.required<Member>();
   hasLiked=computed(()=> this.likeServise.likeIds().includes(this.member().id));
+  isOnline=computed(()=> this.presenceService.onlineUsers().includes(this.member().id));
 
   toggleLike(event: Event){
     event.stopPropagation();
