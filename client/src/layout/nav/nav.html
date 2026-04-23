@@ -53,13 +53,13 @@
 
             <!-- User dropdown   Or  Login form   -->
             @if(accountService.currentUser(); as user){
-            <div class="dropdown dropdown-end">
-                <div tabindex="0" role="button" class="flex items-center text-white text-2xl gap-3  cursor-pointer ">
+            <div class="dropdown dropdown-end" >
+                <div tabindex="0" role="button" class="flex items-center text-white text-2xl gap-3  cursor-pointer " >
                     <img [src]="user.imageUrl ||'/user.png'" alt="user avatar " class="w-8 h-8 rounded-full">
                     <span>{{user.displayName}}</span>
                 </div>
-                <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
-                    <li routerLink="/members/{{user.id}}"><a>Edit profile</a></li>
+                <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm" (click)="handleSelectUserItem()" >
+                    <li routerLink="/members/{{user.id}}" ><a>Edit profile</a></li>
                     <li (click)="logout()"><a>Logout</a></li>
                 </ul>
             </div>
@@ -69,7 +69,10 @@
                 <input [(ngModel)]="creds.email" name="email" type="text" class="input" placeholder="Email">
                 <input [(ngModel)]="creds.password" name="password" type="password" class="input"
                     placeholder="Password">
-                <button class="btn" type="submit">Login</button>
+                <button class="btn" type="submit">
+                    @if(loading()){<span class="loading loading-spinner loading-sm"></span>}
+                    Login
+                </button>
             </form>
             }
 

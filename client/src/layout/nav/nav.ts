@@ -20,6 +20,7 @@ export class Nav implements OnInit{
   protected creds : any = {};
   protected selectedTheme = signal<string>(localStorage.getItem('theme') || 'light');
   protected themes= themes;
+  protected loading= signal(false);
 
   ngOnInit(): void {
     //  Apply the theme to the HTML element immediately on load
@@ -35,21 +36,28 @@ export class Nav implements OnInit{
     elem?.blur(); // Απομάκρυνση εστίασης από το κουμπί μετά την επιλογή θέματος
   }
 
+    handleSelectUserItem() {
+      const elem= document.activeElement as HTMLDivElement;
+      elem?.blur(); // Απομάκρυνση εστίασης από το κουμπί μετά την επιλογή θέματος
+    }
   login(){
     console.log("login...");
+    this.loading.set(true);
+
     this.accountService.login(this.creds)
       .subscribe({
       next: res => {
-        console.log(res); 
         this.toast.success('Logged in successfully');
         this.router.navigateByUrl('/members');// Μετά το login, πλοηγείται στη σελίδα μελών
         this.creds={};// Καθαρίζει τα credentials μετά το login
       },
       error: err => {
-        console.log(err);
         this.toast.error(err.error);
+        this.loading.set(false);
       },
-      complete: () => console.log('Completed login request')
+      complete: () => {
+        this.loading.set(false);
+      }
     });
   }
 

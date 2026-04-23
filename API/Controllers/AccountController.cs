@@ -7,6 +7,7 @@ using API.Entities;
 using API.Extensions;
 using API.Interfaces;
 using API.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -109,5 +110,20 @@ public class AccountController(UserManager<AppUser> userManager, ITokenService t
         //3 αποθήκευση του refresh token στο cookie
         Response.Cookies.Append("refreshToken",refreshToken,cookieOptions); 
     }  
+
+    [Authorize]
+    [HttpPost("logout")]//api/account/logout
+    public async Task<ActionResult> Logout()
+    {
+        var userId = User.GetMemberId(); // μέθοδος επέκτασης για να πάρουμε το userId από τα claims του χρήστη
+        var user = await userManager.Users
+                    .Where(u => u.Id == userId)
+                    .ExecuteUpdateAsync( setters => setters.SetProperty(u => u.RefreshToken, _ =>null)
+                                                            .SetProperty(u => u.RefreshTokenExpiry, _ => null));
+        // Αφαίρεση του refresh token από το cookie
+        Response.Cookies.Delete("refreshToken");
+
+        return Ok();
+    }
  
 }//Account

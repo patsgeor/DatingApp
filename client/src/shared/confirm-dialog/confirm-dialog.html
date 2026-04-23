@@ -1,0 +1,21 @@
+
+<dialog #dialogRef class="modal">
+  <div class="modal-box">
+    <svg class="w-20 h-20 text-red-600 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+    <h3 class="text-lg font-bold">{{message}}</h3>
+    <p class="py-2">This action cannot be undone</p>
+    <div class="modal-action">
+      <form method="dialog" >
+        <!-- if there is a button in form, it will close the modal -->
+         <div class="flex gap-3">
+           <button class="btn btn-outline" (click)="cancel()">Cancel</button>
+           <button class="btn btn-primary" (click)="confirm()">Save</button>
+         </div>
+      </form>
+    </div>
+  </div>
+</dialog>

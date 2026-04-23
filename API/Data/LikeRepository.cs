@@ -60,8 +60,4 @@ public class LikeRepository(AppDbcontext context) : ILikesRepository
         context.MemberLikes.Remove(memberLike);
     }
 
-    public async Task<bool> SaveAllChanges()
-    {
-        return await context.SaveChangesAsync() > 0;
-    }
 }

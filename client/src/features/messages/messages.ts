@@ -5,6 +5,7 @@ import { PaginatedResult } from '../../types/pagination';
 import { Paginator } from "../../shared/paginator/paginator";
 import { DatePipe } from '@angular/common';
 import { RouterLink } from "@angular/router";
+import { ConfirmDialogService } from '../../core/services/confirm-dialog-service';
 
 @Component({
   selector: 'app-messages',
@@ -19,6 +20,7 @@ export class Messages implements OnInit {
   protected pageSize = 15;
   protected pageNumber = 1;
   protected paginatedMessages = signal<PaginatedResult<Message> | null>(null);
+  private confirmDialogService=inject(ConfirmDialogService);
 
   tabs = [{ label: "Inbox", value: "Inbox" },
   { label: "Outbox", value: "Outbox" }
@@ -48,26 +50,33 @@ export class Messages implements OnInit {
     this.loadMessages();
   }
 
+async deleteConfirm(event: Event, id: string){
+  event.stopPropagation();
+  const ok =await this.confirmDialogService.needConfirm("Are you sure you want to delete this message?");
+    if(ok){
+      this.deleteMessage(id);
+    }
+}
 
-  deleteMessage(event: Event, id: string) {
-    event.stopPropagation();
+deleteMessage( id: string) {
     this.messageService.deleteMessage(id).subscribe({
-      next: () => {
-        const current = this.paginatedMessages();
-        if (current?.items) {
-          this.paginatedMessages.update(prev => {
-            if (!prev) return null;
-
-            const newItems = prev.items.filter(x => x.id != id) || [];
-
-            return {
-              items: newItems,
-              metadata: prev.metadata
-            }
-          })
+        next: () => {
+          const current = this.paginatedMessages();
+          if (current?.items) {
+            this.paginatedMessages.update(prev => {
+              if (!prev) return null;
+  
+              const newItems = prev.items.filter(x => x.id != id) || [];
+  
+              return {
+                items: newItems,
+                metadata: prev.metadata
+              }
+            })
+          }
         }
-      }
-    })
+      })
+    
   }
 
   onPagechange(event: { pageNumber: number; pageSize: number }) {

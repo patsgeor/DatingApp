@@ -15,6 +15,8 @@ import { TimeAgoPipe } from '../../../core/pipes/time-ago-pipe';
 })
 export class MemberProfile implements OnInit, OnDestroy {
   @ViewChild('editForm') editForm?: NgForm; //το χρησιμοποιουμε για να εχουμε προσβαση στη φορμα στο template και να μπορουμε να κανουμε πχ reset 
+
+  // αυτη η μεθοδος καλειται οταν ο χρηστης προσπαθει να φυγει απο τη σελιδα, και αν η φορμα εχει αλλαξει (editForm.dirty) εμφανιζει ενα προειδοποιητικο μηνυμα
   @HostListener('window:beforeunload', ['$event']) notify($event:BeforeUnloadEvent){
     if(this.editForm?.dirty){
       $event.preventDefault();

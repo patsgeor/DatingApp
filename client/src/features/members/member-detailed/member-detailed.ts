@@ -5,6 +5,7 @@ import {  filter } from 'rxjs';
 import { AgePipe } from '../../../core/pipes/age-pipe';
 import { AccountService } from '../../../core/services/account-service';
 import { PresenceService } from '../../../core/services/presence-service';
+import { LikesService } from '../../../core/services/likes-service';
 
 @Component({
   selector: 'app-member-detailed',
@@ -15,16 +16,22 @@ import { PresenceService } from '../../../core/services/presence-service';
 export class MemberDetailed implements OnInit{
   protected memberService=inject(MemberService);
   private accountService=inject(AccountService);
+  protected likeService=inject(LikesService);
   private route=inject(ActivatedRoute);
   private router = inject(Router);
+  private routerId=signal<string | null>(null);
   protected presenceService= inject(PresenceService);
   title=signal<string | undefined>('Profile');
   protected isCurrentUser=computed(()=>{
-    return this.accountService.currentUser()?.id === this.route.snapshot.paramMap.get("id");
+    return this.accountService.currentUser()?.id === this.routerId();
   })
   protected isOnline = computed(()=> this.presenceService.onlineUsers().includes(this.memberService.member().id))
+  protected hasLiked =computed(()=> this.likeService.likeIds().includes(this.routerId()));
 
   ngOnInit(): void {
+     this.route.paramMap.subscribe({
+      next: params =>this.routerId.set(params.get('id'))
+    });
     
     this.title.set(this.route.firstChild?.snapshot?.title);
     
@@ -36,6 +43,7 @@ export class MemberDetailed implements OnInit{
       }
     })
   }
+
 
   
 

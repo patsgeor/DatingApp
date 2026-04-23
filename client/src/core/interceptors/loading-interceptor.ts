@@ -2,6 +2,7 @@ import { HttpEvent, HttpInterceptorFn, HttpParams } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { BusyService } from '../services/busy-service';
 import { delay, finalize, of, tap } from 'rxjs';
+import { HttpResponse } from '@microsoft/signalr';
 
 // Απλο cache για τις GET αιτησεις
 //το οριζουμε εκτος του interceptor για να διατηρειται αναμεσα σε πολλες κλησεις και να μην καθαριζεται καθε φορα
@@ -29,15 +30,20 @@ export const loadingInterceptor: HttpInterceptorFn = (req, next) => {
   if(req.method==='POST' && req.url.includes(`/likes`)){
     invalidateCache('/likes')
   }
+
   if(req.method==='POST' && req.url.includes(`/messages`)){
     invalidateCache('/messages')
   }
 
+  if(req.method==='POST' && req.url.includes(`/logout`)){
+    cache.clear();
+  }
+
   // αν υπαρχει η απαντηση στο cash, την επιστρεφουμε αμεσως χωρις να κανουμε το request
   if(req.method==='GET'){
-    const cashResponse=cache.get(cacheKey);
-    if(cashResponse){
-       return of( cashResponse);// επιστρεφουμε την αποθηκευμενη απαντηση ως observable, για να ταιριαζει με τον τυπο επιστροφης
+    const cacheResponse=cache.get(cacheKey);
+    if(cacheResponse){
+       return of( cacheResponse);// επιστρεφουμε την αποθηκευμενη απαντηση ως observable, για να ταιριαζει με τον τυπο επιστροφης
     }
   }
 
@@ -48,8 +54,8 @@ export const loadingInterceptor: HttpInterceptorFn = (req, next) => {
     delay(500), // προσθετουμε μια τεχνητη καθυστερηση 500ms για να φαινεται το loading spinner
 
     // αποθηκευουμε την απαντηση στο cash για μελλοντικη χρηση
-    tap(response => {
-      cache.set(cacheKey,response);
+    tap(event => { if (event instanceof HttpResponse) 
+      { cache.set(cacheKey, event); } 
     }),
 
     // οταν ολοκληρωνεται το request, μειωνουμε τον μετρητη των busy requests

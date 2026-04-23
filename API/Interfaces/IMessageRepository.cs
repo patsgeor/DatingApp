@@ -12,7 +12,6 @@ public interface IMessageRepository
     Task<Message?> GetMessage(string messageId);
     Task<PaginatedResult<MessageDto>> GetMessagesForMember(MessageParams messageParams);// MessageParams messageParams
     Task<IReadOnlyList<MessageDto>> GetMessageThread(string currentMemberId, string RecipientId);
-    Task<bool>SaveAllChange();
 
     // για το group SignalIr
     void AddGroup(Group group);

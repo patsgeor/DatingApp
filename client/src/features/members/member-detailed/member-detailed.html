@@ -27,14 +27,26 @@
         </div>
 
         <div class="card-actions justify-between gap-2 px-2 mb-3">
-            <button class="btn btn-info flex-1">Go back</button>
-            <button class="btn btn-primary flex-1">Like user</button>
+            <button class="btn btn-info flex-1"
+            routerLink="/members">Go back</button>
+            <button 
+                (click)="likeService.toggleLike(member.id)"
+                [class.btn-error]="hasLiked()"
+                [class.btn-success]="!hasLiked()"
+                class=" btn flex-1">
+                Like user
+            </button>
         </div>
     </div>
     <div class="card bg-base-100 flex flex-col h-[85vh] w-3/4 p-6 ">
         <div class="flex justify-between items-center">
             <h3 class="card-title text-3xl text-primary">{{title()}}</h3>
-            @if(isCurrentUser()){<button class="btn btn-outline btn-primary" (click)="memberService.editMode.set(!memberService.editMode())">{{memberService.editMode()? "cancel": "edit"}}</button>}
+            @if(isCurrentUser()){
+                <button class="btn btn-outline btn-primary" 
+                    (click)="memberService.editMode.set(!memberService.editMode())">
+                    {{memberService.editMode()? "cancel": "edit"}}
+                </button>
+        }
         </div>
         <div class="divider"></div>
         <div>

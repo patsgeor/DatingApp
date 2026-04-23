@@ -49,10 +49,7 @@ public async Task<PaginatedResult<Member>> GetMembersAsync(MemberParams memberPa
         return await context.Members.Where(m => m.Id == memberId).SelectMany(m => m.Photos).ToListAsync();
     }
 
-    public async Task<bool> SaveAllAsync()
-    {
-        return await context.SaveChangesAsync() > 0;
-    }
+
 
     public void Update(Member member)
     {

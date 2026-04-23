@@ -54,7 +54,7 @@ public async Task<ActionResult<IList<string>>> EditRoles(string userId,[FromQuer
     [HttpGet("photos-to-moderate")]
     public async Task<ActionResult>  GetPhotosForModeration()
     {
-        return Ok("Admins or moderators can see this");
+        return await Task.FromResult(Ok("Admins or moderators can see this"));
     }
 
 }

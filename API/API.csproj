@@ -16,7 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\Account\" />
     <Folder Include="Helpers\" />
     <Folder Include="SignalIR\" />
   </ItemGroup>

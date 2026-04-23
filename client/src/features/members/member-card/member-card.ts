@@ -12,24 +12,15 @@ import { PresenceService } from '../../../core/services/presence-service';
   styleUrl: './member-card.css',
 })
 export class MemberCard {
-  likeServise=inject(LikesService);
+  likeService=inject(LikesService);
   presenceService =inject(PresenceService);
   member = input.required<Member>();
-  hasLiked=computed(()=> this.likeServise.likeIds().includes(this.member().id));
+  hasLiked=computed(()=> this.likeService.likeIds().includes(this.member().id));
   isOnline=computed(()=> this.presenceService.onlineUsers().includes(this.member().id));
 
   toggleLike(event: Event){
     event.stopPropagation();
-
-    this.likeServise.toggleLike(this.member().id).subscribe({
-      next: () =>{
-        if(this.likeServise.likeIds().includes(this.member().id)){
-          this.likeServise.likeIds.update(ids => ids.filter(x => x!==this.member().id))
-        }else{
-          this.likeServise.likeIds.update(ids => [...ids,this.member().id])
-        }
-      }
-    })
+    this.likeService.toggleLike(this.member().id);
   }
 
 

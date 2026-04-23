@@ -11,7 +11,7 @@ namespace API.Controllers
 {
 
  [Authorize]
-public class LikesController(ILikesRepository likesRepository) : BaseApiController
+public class LikesController(IUnitOfWork uow) : BaseApiController
 {
     [HttpPost("{targetMemberId}")]
     public async Task<ActionResult> ToggleLike(string targetMemberId)
@@ -20,11 +20,11 @@ public class LikesController(ILikesRepository likesRepository) : BaseApiControll
 
         if (memberId == targetMemberId) return BadRequest("you can not do like to yourself!");
 
-        var existingLike = await likesRepository.GetMemberLike(memberId, targetMemberId);
+        var existingLike = await uow.LikesRepository.GetMemberLike(memberId, targetMemberId);
 
         if (existingLike != null)
         {
-            likesRepository.DeleteLike(existingLike);
+            uow.LikesRepository.DeleteLike(existingLike);
         }
         else
         {
@@ -34,10 +34,10 @@ public class LikesController(ILikesRepository likesRepository) : BaseApiControll
                 TargetMemberId = targetMemberId
             };
 
-            likesRepository.AddLike(memberLike);
+            uow.LikesRepository.AddLike(memberLike);
         }
 
-        if (await likesRepository.SaveAllChanges()) return Ok();
+        if (await uow.Completed()) return Ok();
 
         return BadRequest("Failed to update like!");
     }
@@ -45,13 +45,13 @@ public class LikesController(ILikesRepository likesRepository) : BaseApiControll
     [HttpGet("list")]
     public async Task<ActionResult<IReadOnlyList<string>>> GetCurrentMemberList()
     {
-        return Ok( await likesRepository.GetCurrentMemberLikesIds(User.GetMemberId()));
+        return Ok( await uow.LikesRepository.GetCurrentMemberLikesIds(User.GetMemberId()));
     }
 
     [HttpGet]
     public async Task<ActionResult<PaginatedResult<Member>>> GetMemberList([FromQuery] LikesParams likesParams)
     {
-        var members = await likesRepository.GetMemberLikes(likesParams,User.GetMemberId());
+        var members = await uow.LikesRepository.GetMemberLikes(likesParams,User.GetMemberId());
 
         return Ok(members);
     }

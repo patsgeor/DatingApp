@@ -27,11 +27,9 @@ builder.Services.AddDbContext<AppDbcontext>(options =>
 builder.Services.AddCors();//για να επιτρεψει αιτησεις απο angular
 
 builder.Services.AddScoped<ITokenService, TokenService>();//dependency injection για το token service
-builder.Services.AddScoped<IMemberRepository, MemberRepository>();//dependency injection για το member repository
 builder.Services.AddScoped<LogUserActivity>();//dependency injection για το log user activity action filter
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();//dependency injection για το UnitOfWork
 builder.Services.AddScoped<IPhotoService, PhotoService>();//dependency injection για το photo service
-builder.Services.AddScoped<ILikesRepository, LikeRepository>();//dependency injection για το LikeRepository
-builder.Services.AddScoped<IMessageRepository, MessageRepository>();//dependency injection για το MessageRepository
 builder.Services.AddSignalR();//για να προσθέσουμε υποστήριξη για SignalR (real-time communication)
 
 builder.Services.AddSingleton<PresenceTracker>();

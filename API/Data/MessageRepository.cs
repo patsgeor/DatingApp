@@ -91,8 +91,5 @@ public class MessageRepository(AppDbcontext context) : IMessageRepository
                 .ExecuteDeleteAsync();        
     }
 
-    public async Task<bool> SaveAllChange()
-    {
-        return await context.SaveChangesAsync()>0;
-    }
+
 }
